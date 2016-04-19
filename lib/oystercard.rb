@@ -1,6 +1,6 @@
 class Oystercard
 
-  attr_reader :balance, :entry_station
+  attr_reader :balance, :entry_station, :exit_station
 
   DEFAULT_LIMIT = 90.00
   BALANCE = @balance.to_f
@@ -27,6 +27,7 @@ class Oystercard
 
   def touch_out(station)
     @entry_station = nil
+    @exit_station = station
     deduct
   end
 
