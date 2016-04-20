@@ -27,6 +27,11 @@ describe Oystercard do
 end
 
 
+let (:entry_station) {double :journey}
+let (:exit_station) {double :journey}
+
+# MAKE JOURNEY REMEMBER ENTRY AND EXIT STATIONS
+
   describe "#touch_in" do
     let (:station) {double :station}
     it 'changes the journey status to true' do
@@ -81,6 +86,13 @@ end
       subject.touch_out(station2)
       expect(subject.journey).to eq station2
     end
+  it "saves the exit station to journey" do
+      subject.top_up Oystercard::MINIMUM_BALANCE
+      subject.touch_in(station)
+      subject.touch_out(station2)
+      expect(:journey).to include(:entry_station => :exit_station)
+    end
+
   end
 
 end
