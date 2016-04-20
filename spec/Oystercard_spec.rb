@@ -18,7 +18,7 @@ describe Oystercard do
     end
   end
 
-  describe "#limit_reached" do
+  describe "#limit_reached?" do
     it "raise error if #top_up(amount) puts balance over maximum limit." do
 
       message = "Top up amount pushes you over your maximum oyster card limit of £#{Oystercard::DEFAULT_LIMIT}. Your current balance is £#{Oystercard::BALANCE}"
@@ -26,13 +26,8 @@ describe Oystercard do
     end
 end
 
-  describe '#in_journey?' do
-    it "returns current journey status of Oystercard" do
-      expect(subject).not_to be_in_journey
-    end
-  end
 
-  describe "#touch_in(station)" do
+  describe "#touch_in" do
     let (:station) {double :station}
     it 'changes the journey status to true' do
       subject.top_up Oystercard::MINIMUM_BALANCE
@@ -42,7 +37,7 @@ end
     it 'raises an error if balance below minimun limit' do
       expect{ subject.touch_in(station) }.to raise_error "Please top up, not enough credit"
     end
-    it ' remembers the station we touched in' do
+    it 'remembers the station we touched in' do
       subject.top_up Oystercard::MINIMUM_BALANCE
       subject.touch_in(station)
       expect(subject.entry_station).to eq station
