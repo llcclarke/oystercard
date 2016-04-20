@@ -9,6 +9,7 @@ class Oystercard
 
   def initialize
     @balance = 0.00
+    @journey = {}
   end
 
   def top_up(money)
@@ -28,8 +29,7 @@ class Oystercard
 
   def touch_out(station)
     @exit_station = station
-    @journey = @exit_station
-    @entry_station = nil
+    @journey =  { @entry_station => @exit_station }
     deduct
   end
 

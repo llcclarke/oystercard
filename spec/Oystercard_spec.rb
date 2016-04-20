@@ -55,42 +55,29 @@ let (:exit_station) {double :journey}
   end
 
   describe "#touch_out" do
-    let (:station) {double :station}
-     let (:station2) {double :station2}
-    it 'changes the journey statis to false' do
-      subject.top_up Oystercard::MINIMUM_BALANCE
-      subject.touch_in(station)
-      subject.touch_out(station)
-      expect(subject).not_to be_in_journey
-    end
+    let (:station) {double :journey}
+     let (:station2) {double :journey2}
+
+
     it "deducts the fare from the oystercard" do
       subject.top_up Oystercard::MINIMUM_BALANCE
       subject.touch_in(station)
       expect{ subject.touch_out(station) }.to change { subject.balance }.by -Oystercard::FARE
     end
-    it "forgets entry station upon touch_out" do
-      subject.top_up Oystercard::MINIMUM_BALANCE
-      subject.touch_in(station)
-      subject.touch_out(station)
-      expect(subject.entry_station).to eq nil
-    end
+
+
     it "remembers exit station" do
       subject.top_up Oystercard::MINIMUM_BALANCE
       subject.touch_in(station)
       subject.touch_out(station)
       expect(subject.exit_station).to eq station
     end
-    it "saves the exit station to journey" do
-      subject.top_up Oystercard::MINIMUM_BALANCE
-      subject.touch_in(station)
-      subject.touch_out(station2)
-      expect(subject.journey).to eq station2
-    end
+
   it "saves the exit station to journey" do
       subject.top_up Oystercard::MINIMUM_BALANCE
       subject.touch_in(station)
       subject.touch_out(station2)
-      expect(:journey).to include(:entry_station => :exit_station)
+      expect(subject.journey).to include(station => station2)
     end
 
   end
