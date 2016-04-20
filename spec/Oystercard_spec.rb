@@ -73,13 +73,18 @@ let (:exit_station) {double :journey}
       expect(subject.exit_station).to eq station
     end
 
-  it "saves the exit station to journey" do
+  it "saves the entry and exit station to journey" do
       subject.top_up Oystercard::MINIMUM_BALANCE
       subject.touch_in(station)
       subject.touch_out(station2)
       expect(subject.journey).to include(station => station2)
     end
-
+  it "saves the journey hash to an array" do
+      subject.top_up Oystercard::MINIMUM_BALANCE
+      subject.touch_in(station)
+      subject.touch_out(station2)
+      expect(subject.journeys).to include journey
+    end
   end
 
 end
