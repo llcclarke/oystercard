@@ -45,7 +45,7 @@ end
     it "saves the entry station to journey" do
       subject.top_up Oystercard::MINIMUM_BALANCE
       subject.touch_in(station)
-      expect(subject.entry_station).to eq journey
+      expect(station).to eq journey
     end
   end
 
