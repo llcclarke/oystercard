@@ -75,7 +75,7 @@ end
       subject.touch_out(station)
       expect(subject.exit_station).to eq station
     end
-    it "saves the entry station to journey" do
+    it "saves the exit station to journey" do
       subject.top_up Oystercard::MINIMUM_BALANCE
       subject.touch_in(station)
       subject.touch_out(station2)
