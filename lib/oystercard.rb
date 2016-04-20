@@ -1,6 +1,6 @@
 class Oystercard
 
-  attr_reader :balance, :entry_station, :exit_station
+  attr_reader :balance, :entry_station, :exit_station, :journey
 
   DEFAULT_LIMIT = 90.00
   BALANCE = @balance.to_f
@@ -23,6 +23,7 @@ class Oystercard
   def touch_in(station)
     fail "Please top up, not enough credit" if @balance < MINIMUM_BALANCE
     @entry_station = station
+    @journey = @entry_station
   end
 
   def touch_out(station)
@@ -30,6 +31,8 @@ class Oystercard
     @exit_station = station
     deduct
   end
+
+
 
 private
 
