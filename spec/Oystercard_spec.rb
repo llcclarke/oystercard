@@ -46,7 +46,7 @@ let (:exit_station) {double :exit_station, name: "stn2", zone: 5}
   end
 
   describe "#touch_out" do
-    let(:journey) {{entry: ["stn1", 1], exit: ["stn2", 5]}}
+    let(:journey) {{entry: entry_station, exit: exit_station}}
 
     before {subject.top_up Oystercard::MINIMUM_BALANCE}
     before {subject.touch_in(entry_station)}
@@ -59,6 +59,16 @@ let (:exit_station) {double :exit_station, name: "stn2", zone: 5}
     it "saves the exit station in the journey history" do
       subject.touch_out(exit_station)
       expect(subject.journeys).to include journey
+    end
+
+    context "when not touched" do
+      let(:journey) {{entry: nil, exit: exit_station}}
+      it "shows nil entry station" do
+        no_entry = Oystercard.new
+        no_entry.touch_out(exit_station)
+        expect(no_entry.journeys).to include journey
+      end
+
     end
 
   end

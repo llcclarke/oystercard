@@ -1,7 +1,7 @@
 require 'journey'
 
 describe Journey do
-  # it {is_expected.to respond_to(:fare)}
+  it {is_expected.to respond_to(:fare)}
   let(:entry_station) {double :entry_station}
   let(:exit_station) {double :exit_station}
 
@@ -21,6 +21,18 @@ describe Journey do
   it "a journey without a beginning has no start" do
     un_begun_journey = Journey.new
     expect(un_begun_journey.log).to eq un_begun
+  end
+
+  context "when not completed" do
+    it "charge penalty fare" do
+      expect(journey.fare).to eq described_class::PEN_FARE
+    end
+  end
+  context "when completed" do
+    it "charge min fare" do
+      journey.finish exit_station
+      expect(subject.fare).to eq described_class::MIN_FARE
+    end
   end
 
 

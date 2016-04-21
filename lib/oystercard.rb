@@ -26,10 +26,10 @@ class Oystercard
   def touch_in(station)
     fail "Please top up, not enough credit" if not_enough_credit?
     @journey = Journey.new station
-    @journey.start 
   end
 
   def touch_out(station)
+    @journey = Journey.new if no_entry_station?
     @journeys << @journey.finish(station)
     @journey = nil
     deduct
@@ -54,4 +54,9 @@ private
   def top_up_fail_message
     "Top up amount pushes you over your maximum oyster card limit of £#{DEFAULT_LIMIT}. Your current balance is £#{@balance}"
   end
+
+  def no_entry_station?
+    @journey.nil?
+  end
+
 end

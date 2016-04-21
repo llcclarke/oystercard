@@ -3,6 +3,10 @@
 class Journey
   attr_reader :log
 
+  MIN_FARE = 1
+  PEN_FARE = 6
+
+
   def initialize(station = nil)
     @log = {entry: station, exit: nil}
   end
@@ -17,8 +21,8 @@ class Journey
   end
 
   def fare
+    complete? ? MIN_FARE : PEN_FARE
   end
-  private
 
 
 end
