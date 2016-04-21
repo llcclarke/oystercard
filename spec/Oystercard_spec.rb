@@ -7,8 +7,8 @@ describe Oystercard do
     it "starts with a balance of zero" do
       expect(subject.balance).to eq 0
     end
-    it 'starts at a nil station' do
-    expect(subject.entry_station).to eq nil
+    it 'starts with an empty journey history' do
+    expect(subject.journeys).to be_empty
     end
   end
 
@@ -20,9 +20,9 @@ describe Oystercard do
 
   describe "#limit_reached?" do
     it "raise error if #top_up(amount) puts balance over maximum limit." do
-
-      message = "Top up amount pushes you over your maximum oyster card limit of £#{Oystercard::DEFAULT_LIMIT}. Your current balance is £#{Oystercard::BALANCE}"
-      expect{ subject.top_up 91 }.to raise_error message
+      msg1 = "Top up amount pushes you over your maximum oyster card limit of £#{Oystercard::DEFAULT_LIMIT}."
+      msg2 =  "Your current balance is £#{subject.balance}"
+      expect{ subject.top_up 91 }.to raise_error "#{msg1} #{msg2}"
     end
 end
 
@@ -34,57 +34,45 @@ let (:exit_station) {double :journey}
 
   describe "#touch_in" do
     let (:station) {double :station}
+    let(:journey) {{entry: station}}
     it 'changes the journey status to true' do
       subject.top_up Oystercard::MINIMUM_BALANCE
       subject.touch_in(station)
       expect(subject).to be_in_journey
-      end
+    end
+
     it 'raises an error if balance below minimun limit' do
       expect{ subject.touch_in(station) }.to raise_error "Please top up, not enough credit"
     end
-    it 'remembers the station we touched in' do
+
+    it "saves the entry station in current journey" do
       subject.top_up Oystercard::MINIMUM_BALANCE
       subject.touch_in(station)
-      expect(subject.entry_station).to eq station
-    end
-    it "saves the entry station to journey" do
-      subject.top_up Oystercard::MINIMUM_BALANCE
-      subject.touch_in(station)
-      expect(subject.journey).to eq station
+      expect(subject.journey).to eq journey
     end
   end
 
   describe "#touch_out" do
-    let (:station) {double :journey}
-     let (:station2) {double :journey2}
+    let(:station) {double :station}
+    let(:station2) {double :station2}
+    let(:journey) {{entry: station, exit: station2}}
+
+    before {subject.top_up Oystercard::MINIMUM_BALANCE}
+    before {subject.touch_in(station)}
 
 
     it "deducts the fare from the oystercard" do
-      subject.top_up Oystercard::MINIMUM_BALANCE
-      subject.touch_in(station)
       expect{ subject.touch_out(station) }.to change { subject.balance }.by -Oystercard::FARE
     end
 
-
-    it "remembers exit station" do
-      subject.top_up Oystercard::MINIMUM_BALANCE
-      subject.touch_in(station)
-      subject.touch_out(station)
-      expect(subject.exit_station).to eq station
-    end
-
-  it "saves the entry and exit station to journey" do
-      subject.top_up Oystercard::MINIMUM_BALANCE
-      subject.touch_in(station)
-      subject.touch_out(station2)
-      expect(subject.journey).to include(station => station2)
-    end
-  it "saves the journey hash to an array" do
-      subject.top_up Oystercard::MINIMUM_BALANCE
-      subject.touch_in(station)
+    it "saves the exit station in the journey history" do
       subject.touch_out(station2)
       expect(subject.journeys).to include journey
     end
-  end
 
+    it "resets journey to empty" do
+      subject.touch_out(station2)
+      expect(subject.journey).to be_empty
+    end
+  end
 end
