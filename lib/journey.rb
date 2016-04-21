@@ -1,4 +1,7 @@
+
+
 class Journey
+  attr_reader :log
 
   def initialize
     @log = {}
@@ -10,14 +13,14 @@ class Journey
 
   def finish station
     @log[:exit] = [station.name, station.zone]
-    log
+    @log
   end
 
   def complete?
-     @log.includes? @log[exit]
+     @log.keys.include? :exit
   end
 
   private
-  attr_reader :log
+
 
 end

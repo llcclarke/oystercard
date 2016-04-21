@@ -43,12 +43,6 @@ let (:exit_station) {double :exit_station, name: "stn2", zone: 5}
     it 'raises an error if balance below minimun limit' do
       expect{ subject.touch_in(entry_station) }.to raise_error "Please top up, not enough credit"
     end
-
-    it "saves the entry station and zone in current journey" do
-      subject.top_up Oystercard::MINIMUM_BALANCE
-      subject.touch_in(entry_station)
-      expect(subject.journey).to eq journey
-    end
   end
 
   describe "#touch_out" do
@@ -67,9 +61,5 @@ let (:exit_station) {double :exit_station, name: "stn2", zone: 5}
       expect(subject.journeys).to include journey
     end
 
-    it "resets journey to empty" do
-      subject.touch_out(exit_station)
-      expect(subject.journey).to be_empty
-    end
   end
 end

@@ -12,11 +12,6 @@ describe Journey do
     it 'makes the stations name and zone it\'s bitches' do
       expect(subject.start entry_station).to eq ['station1',1]
     end
-
-    it "journey is not complete" do
-      subject.start entry_station
-      expect(subject).not_to be_complete
-    end
   end
 
   describe "#exit" do
@@ -35,6 +30,7 @@ describe Journey do
       end
 
       it "journey is complete" do
+        subject.finish exit_station
         expect(subject).to be_complete
       end
     end

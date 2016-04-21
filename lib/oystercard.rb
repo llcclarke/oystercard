@@ -1,3 +1,4 @@
+require_relative 'journey'
 
 class Oystercard
 
@@ -9,7 +10,6 @@ class Oystercard
 
   def initialize
     @balance = 0.00
-    @journey = {}
     @journeys = []
   end
 
@@ -24,13 +24,12 @@ class Oystercard
 
   def touch_in(station)
     fail "Please top up, not enough credit" if not_enough_credit?
-    @journey[:entry] = [station.name, station.zone]
+    @journey = Journey.new
+    @journey.start station
   end
 
   def touch_out(station)
-    @journey[:exit] = [station.name, station.zone]
-    @journeys << @journey
-    @journey = {}
+    @journeys << @journey.finish(station)
     deduct
   end
 
