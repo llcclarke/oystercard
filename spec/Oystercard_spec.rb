@@ -27,51 +27,48 @@ describe Oystercard do
 end
 
 
-let (:entry_station) {double :journey}
-let (:exit_station) {double :journey}
+let (:entry_station) {double :entry_station, name: "stn1", zone: 1}
+let (:exit_station) {double :exit_station, name: "stn2", zone: 5}
 
 # MAKE JOURNEY REMEMBER ENTRY AND EXIT STATIONS
 
   describe "#touch_in" do
-    let (:station) {double :station}
-    let(:journey) {{entry: station}}
+    let(:journey) {{entry: ["stn1", 1]}}
     it 'changes the journey status to true' do
       subject.top_up Oystercard::MINIMUM_BALANCE
-      subject.touch_in(station)
+      subject.touch_in(entry_station)
       expect(subject).to be_in_journey
     end
 
     it 'raises an error if balance below minimun limit' do
-      expect{ subject.touch_in(station) }.to raise_error "Please top up, not enough credit"
+      expect{ subject.touch_in(entry_station) }.to raise_error "Please top up, not enough credit"
     end
 
-    it "saves the entry station in current journey" do
+    it "saves the entry station and zone in current journey" do
       subject.top_up Oystercard::MINIMUM_BALANCE
-      subject.touch_in(station)
+      subject.touch_in(entry_station)
       expect(subject.journey).to eq journey
     end
   end
 
   describe "#touch_out" do
-    let(:station) {double :station}
-    let(:station2) {double :station2}
-    let(:journey) {{entry: station, exit: station2}}
+    let(:journey) {{entry: ["stn1", 1], exit: ["stn2", 5]}}
 
     before {subject.top_up Oystercard::MINIMUM_BALANCE}
-    before {subject.touch_in(station)}
+    before {subject.touch_in(entry_station)}
 
 
     it "deducts the fare from the oystercard" do
-      expect{ subject.touch_out(station) }.to change { subject.balance }.by -Oystercard::FARE
+      expect{ subject.touch_out(entry_station) }.to change { subject.balance }.by -Oystercard::FARE
     end
 
     it "saves the exit station in the journey history" do
-      subject.touch_out(station2)
+      subject.touch_out(exit_station)
       expect(subject.journeys).to include journey
     end
 
     it "resets journey to empty" do
-      subject.touch_out(station2)
+      subject.touch_out(exit_station)
       expect(subject.journey).to be_empty
     end
   end

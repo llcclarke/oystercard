@@ -1,3 +1,4 @@
+
 class Oystercard
 
   attr_reader :balance, :journey, :journeys
@@ -23,11 +24,11 @@ class Oystercard
 
   def touch_in(station)
     fail "Please top up, not enough credit" if not_enough_credit?
-    @journey[:entry] = station
+    @journey[:entry] = [station.name, station.zone]
   end
 
   def touch_out(station)
-    @journey[:exit] = station
+    @journey[:exit] = [station.name, station.zone]
     @journeys << @journey
     @journey = {}
     deduct
