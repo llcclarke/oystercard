@@ -13,23 +13,23 @@ class Oystercard
   end
 
   def top_up(money)
-    fail "Top up amount pushes you over your maximum oyster card limit of £#{DEFAULT_LIMIT}. Your current balance is £#{@balance}" if limit_reached?(money)
+    fail top_up_fail_message if limit_reached?(money)
     @balance += money
   end
 
   def in_journey?
-    !!@entry_station
+    @journey != {}
   end
 
   def touch_in(station)
     fail "Please top up, not enough credit" if not_enough_credit?
-    @entry_station = station
     @journey[:entry] = station
   end
 
   def touch_out(station)
     @journey[:exit] = station
     @journeys << @journey
+    @journey = {}
     deduct
   end
 
@@ -47,5 +47,9 @@ private
 
   def deduct
     @balance -= FARE
+  end
+
+  def top_up_fail_message
+    "Top up amount pushes you over your maximum oyster card limit of £#{DEFAULT_LIMIT}. Your current balance is £#{@balance}"
   end
 end
