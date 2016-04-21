@@ -2,7 +2,7 @@ require 'station'
 
 describe Station do
 
-let(:station) {Station.new("station_name",1)}
+subject(:station) {Station.new("station_name",1)}
 
   it "has a name" do
     expect(station.name).to eq "station_name"
