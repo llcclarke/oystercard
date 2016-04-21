@@ -3,23 +3,21 @@
 class Journey
   attr_reader :log
 
-  def initialize
-    @log = {}
-  end
-
-  def start station
-    @log[:entry] = [station.name, station.zone]
+  def initialize(station = nil)
+    @log = {entry: station, exit: nil}
   end
 
   def finish station
-    @log[:exit] = [station.name, station.zone]
+    @log[:exit] = station
     @log
   end
 
   def complete?
-     @log.keys.include? :exit
+     !!@log[:entry] && !!@log[:exit]
   end
 
+  def fare
+  end
   private
 
 

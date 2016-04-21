@@ -1,39 +1,47 @@
 require 'journey'
 
 describe Journey do
-  it {is_expected.to respond_to(:complete?)}
+  # it {is_expected.to respond_to(:fare)}
+  let(:entry_station) {double :entry_station}
+  let(:exit_station) {double :exit_station}
+
+  let(:first_half) {{entry: entry_station, exit: nil}}
+  let(:un_begun) {{entry: nil, exit: nil}}
+  let(:full_journey) {{entry: entry_station, exit: exit_station}}
+  subject(:journey) {Journey.new entry_station}
 
   it "a new journey in not complete" do
     expect(subject).not_to be_complete
   end
 
-  describe "#entry" do
-    let(:entry_station) {double :entry_station, name: 'station1', zone: 1}
-    it 'makes the stations name and zone it\'s bitches' do
-      expect(subject.start entry_station).to eq ['station1',1]
-    end
+  it "a journey starts at its beginning" do
+    expect(subject.log).to eq first_half
   end
 
-  describe "#exit" do
-    let(:exit_station) {double :exit_station, name: 'station2', zone: 10}
-    let(:half_journey) {{exit:['station2',10]}}
-    it 'makes the stations name and zone it\'s bitches' do
-      expect(subject.finish exit_station).to eq half_journey
-    end
+  it "a journey without a beginning has no start" do
+    un_begun_journey = Journey.new
+    expect(un_begun_journey.log).to eq un_begun
+  end
+
+
+  describe "#finish" do
 
     context "when tapped in already" do
-      let(:entry_station) {double :entry_station, name: 'station1', zone: 1}
-      let(:fin_journey) {{entry:["station1",1],exit:['station2',10]}}
-      before {subject.start entry_station}
       it 'makes entry and exit its bitches' do
-        expect(subject.finish exit_station).to eq fin_journey
+        journey.finish exit_station
+        expect(journey.log).to eq full_journey
       end
-
       it "journey is complete" do
         subject.finish exit_station
         expect(subject).to be_complete
       end
     end
+    context "when not tapped in" do
+      subject(:journey) {Journey.new}
+      it 'shows journey not complete' do
+        journey.finish exit_station
+        expect(journey).not_to be_complete
+      end
+    end
   end
-
 end

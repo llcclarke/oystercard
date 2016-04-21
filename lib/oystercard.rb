@@ -11,6 +11,7 @@ class Oystercard
   def initialize
     @balance = 0.00
     @journeys = []
+    @journey = nil
   end
 
   def top_up(money)
@@ -19,17 +20,18 @@ class Oystercard
   end
 
   def in_journey?
-    @journey != {}
+    !!@journey
   end
 
   def touch_in(station)
     fail "Please top up, not enough credit" if not_enough_credit?
-    @journey = Journey.new
-    @journey.start station
+    @journey = Journey.new station
+    @journey.start 
   end
 
   def touch_out(station)
     @journeys << @journey.finish(station)
+    @journey = nil
     deduct
   end
 
