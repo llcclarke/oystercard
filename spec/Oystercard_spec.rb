@@ -30,7 +30,6 @@ end
 let (:entry_station) {double :entry_station, name: "stn1", zone: 1}
 let (:exit_station) {double :exit_station, name: "stn2", zone: 5}
 
-# MAKE JOURNEY REMEMBER ENTRY AND EXIT STATIONS
 
   describe "#touch_in" do
     let(:journey) {{entry: ["stn1", 1]}}
@@ -43,6 +42,27 @@ let (:exit_station) {double :exit_station, name: "stn2", zone: 5}
     it 'raises an error if balance below minimun limit' do
       expect{ subject.touch_in(entry_station) }.to raise_error "Please top up, not enough credit"
     end
+
+
+     context "when have not touched out" do
+      let(:journey) {{entry: entry_station, exit: nil}}
+
+      it "shows nil entry station" do
+        no_exit = Oystercard.new
+        no_exit.top_up 10
+        no_exit.touch_in(entry_station)
+        no_exit.touch_in(entry_station)
+        expect(no_exit.journeys).to include journey
+      end
+
+      it "deducts penalty fare when touching in again" do
+        no_exit = Oystercard.new
+        no_exit.top_up 10
+        no_exit.touch_in(entry_station)
+        expect{ no_exit.touch_in(entry_station) }.to change { no_exit.balance }.by -Journey::PEN_FARE
+
+      end
+    end
   end
 
   describe "#touch_out" do
@@ -51,10 +71,12 @@ let (:exit_station) {double :exit_station, name: "stn2", zone: 5}
     before {subject.top_up Oystercard::MINIMUM_BALANCE}
     before {subject.touch_in(entry_station)}
 
-
+#change
     it "deducts the fare from the oystercard" do
-      expect{ subject.touch_out(entry_station) }.to change { subject.balance }.by -Oystercard::FARE
+      expect{ subject.touch_out(exit_station) }.to change { subject.balance }.by -Oystercard::FARE
     end
+
+
 
     it "saves the exit station in the journey history" do
       subject.touch_out(exit_station)
@@ -68,7 +90,11 @@ let (:exit_station) {double :exit_station, name: "stn2", zone: 5}
         no_entry.touch_out(exit_station)
         expect(no_entry.journeys).to include journey
       end
-
+      it "deducts penalty fare from card if no touch in" do
+        no_entry = Oystercard.new
+        no_entry.top_up 10
+        expect{ no_entry.touch_out(exit_station) }.to change { no_entry.balance }.by -Journey::PEN_FARE
+    end
     end
 
   end

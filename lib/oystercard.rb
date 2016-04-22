@@ -24,15 +24,17 @@ class Oystercard
   end
 
   def touch_in(station)
-    fail "Please top up, not enough credit" if not_enough_credit?
+    fail no_credit_message if not_enough_credit?
+    double_touch_in
     @journey = Journey.new station
   end
 
   def touch_out(station)
     @journey = Journey.new if no_entry_station?
     @journeys << @journey.finish(station)
-    @journey = nil
     deduct
+    @journey = nil
+
   end
 
 
@@ -48,7 +50,7 @@ private
   end
 
   def deduct
-    @balance -= FARE
+    @balance -= @journey.fare
   end
 
   def top_up_fail_message
@@ -58,5 +60,17 @@ private
   def no_entry_station?
     @journey.nil?
   end
+
+  def double_touch_in
+    if @journey != nil
+      @journeys << @journey.log
+      deduct
+    end
+  end
+
+  def no_credit_message
+    "Please top up, not enough credit"
+  end
+
 
 end
